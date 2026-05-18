@@ -1,23 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Strength Analyzer</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Password Strength Analyzer</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Arial, sans-serif;
+    }
+
+    body{
+        background:#0f172a;
+        height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        color:white;
+    }
+
+    .container{
+        background:#1e293b;
+        padding:35px;
+        border-radius:15px;
+        width:380px;
+        box-shadow:0 0 20px rgba(0,0,0,0.5);
+    }
+
+    h1{
+        text-align:center;
+        margin-bottom:25px;
+        font-size:28px;
+    }
+
+    input{
+        width:100%;
+        padding:14px;
+        border:none;
+        outline:none;
+        border-radius:8px;
+        font-size:16px;
+        margin-bottom:15px;
+    }
+
+    .strength-bar{
+        width:100%;
+        height:10px;
+        background:#334155;
+        border-radius:10px;
+        overflow:hidden;
+        margin-bottom:15px;
+    }
+
+    .bar{
+        height:100%;
+        width:0%;
+        transition:0.4s;
+    }
+
+    .details{
+        margin-top:15px;
+        line-height:28px;
+        font-size:15px;
+    }
+
+    .suggestion{
+        margin-top:15px;
+        background:#0f172a;
+        padding:10px;
+        border-radius:8px;
+        font-size:14px;
+    }
+
+    .toggle{
+        margin-bottom:15px;
+        cursor:pointer;
+        color:#38bdf8;
+        font-size:14px;
+    }
+
+    .footer{
+        margin-top:20px;
+        text-align:center;
+        font-size:13px;
+        color:#94a3b8;
+    }
+</style>
 </head>
+
 <body>
 
 <div class="container">
+
     <h1>Password Strength Analyzer</h1>
 
-    <input type="password" id="password" placeholder="Enter password">
+    <input type="password" id="password" placeholder="Enter Password" onkeyup="checkPassword()">
 
-    <div id="strength"></div>
+    <div class="toggle" onclick="togglePassword()">Show / Hide Password</div>
 
-    <button onclick="checkPassword()">Check Strength</button>
+    <div class="strength-bar">
+        <div class="bar" id="bar"></div>
+    </div>
+
+    <h3 id="strengthText">Password Strength</h3>
+
+    <div class="details" id="details"></div>
+
+    <div class="suggestion" id="suggestion">
+        Suggestion will appear here
+    </div>
+
+    <div class="footer">
+        Secure Password Checker
+    </div>
+
 </div>
 
-<script src="script.js"></script>
+<script>
+
+function checkPassword(){
+
+    let password = document.getElementById("password").value;
+    let bar = document.getElementById("bar");
+    let strengthText = document.getElementById("strengthText");
+    let details = document.getElementById("details");
+    let suggestion = document.getElementById("suggestion");
+
+    let score = 0;
+
+    let upper = /[A-Z]/.test(password);
+    let lower = /[a-z]/.test(password);
+    let number = /[0-9]/.test(password);
+    let special = /[^A-Za-z0-9]/.test(password);
+
+    if(password.length >= 8) score++;
+    if(upper) score++;
+    if(lower) score++;
+    if(number) score++;
+    if(special) score++;
+
+    details.innerHTML = `
+        Length: ${password.length} characters<br>
+        Uppercase: ${upper ? "✔️" : "❌"}<br>
+        Lowercase: ${lower ? "✔️" : "❌"}<br>
+        Numbers: ${number ? "✔️" : "❌"}<br>
+        Special Characters: ${special ? "✔️" : "❌"}
+    `;
+
+    if(password.length === 0){
+        strengthText.innerHTML = "Password Strength";
+        bar.style.width = "0%";
+        suggestion.innerHTML = "Suggestion will appear here";
+        return;
+    }
+
+    if(score <= 2){
+        strengthText.innerHTML = "Weak Password";
+        strengthText.style.color = "red";
+        bar.style.width = "33%";
+        bar.style.background = "red";
+
+        suggestion.innerHTML =
+        "Use at least 8 characters, uppercase letters, numbers and symbols.";
+    }
+
+    else if(score <= 4){
+        strengthText.innerHTML = "Medium Password";
+        strengthText.style.color = "orange";
+        bar.style.width = "66%";
+        bar.style.background = "orange";
+
+        suggestion.innerHTML =
+        "Add more symbols and increase password length for better security.";
+    }
+
+    else{
+        strengthText.innerHTML = "Strong Password";
+        strengthText.style.color = "lime";
+        bar.style.width = "100%";
+        bar.style.background = "lime";
+
+        suggestion.innerHTML =
+        "Excellent password strength.";
+    }
+}
+
+function togglePassword(){
+
+    let password = document.getElementById("password");
+
+    if(password.type === "password"){
+        password.type = "text";
+    }
+    else{
+        password.type = "password";
+    }
+}
+
+</script>
+
 </body>
 </html>
